@@ -63,7 +63,8 @@ npm start
 - **GET /** - 查看 API 文档
 - **GET /health** - 健康检查
 - **GET /api/hotsearch** - 获取热搜数据（不发送到飞书）
-- **GET /api/hotsearch/send** - 获取热搜数据并发送到飞书
+- **GET /api/hotsearch/send** - 获取热搜数据并发送到飞书（使用 AI，如果启用）
+- **GET /api/hotsearch/send/raw** - 获取热搜数据并发送原始信息到飞书（不使用 AI）
 - **GET /api/run** - 运行完整流程（获取并发送）
 
 #### 使用示例
@@ -72,8 +73,11 @@ npm start
 # 获取热搜数据
 curl http://localhost:1575/api/hotsearch
 
-# 获取并发送到飞书
+# 获取并发送到飞书（使用 AI，如果启用）
 curl http://localhost:1575/api/hotsearch/send
+
+# 获取并发送原始信息到飞书（不使用 AI 分析）
+curl http://localhost:1575/api/hotsearch/send/raw
 
 # 运行完整流程
 curl http://localhost:1575/api/run

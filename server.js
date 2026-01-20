@@ -47,7 +47,7 @@ app.get('/api/hotsearch', async (req, res) => {
     }
 });
 
-// 获取热搜数据并发送到飞书
+// 获取热搜数据并发送到飞书（使用 AI，如果启用）
 app.get('/api/hotsearch/send', async (req, res) => {
     try {
         console.log(chalk.blue('📤 收到发送热搜到飞书请求'));
@@ -73,6 +73,40 @@ app.get('/api/hotsearch/send', async (req, res) => {
         res.status(sendSuccess ? 200 : 500).json(response);
     } catch (error) {
         console.error(chalk.red('❌ 发送热搜失败:'), error.message);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
+// 获取热搜数据并发送原始信息到飞书（不使用 AI）
+app.get('/api/hotsearch/send/raw', async (req, res) => {
+    try {
+        console.log(chalk.blue('📤 收到发送原始热搜到飞书请求（不使用 AI）'));
+        const crawler = new HotSearchCrawler();
+        await crawler.fetchAllPlatforms();
+        
+        // 发送原始消息到飞书（不使用 AI）
+        const sendSuccess = await crawler.sendToFeishuRaw();
+        
+        const response = {
+            success: sendSuccess,
+            timestamp: new Date().toISOString(),
+            data: crawler.results,
+            message: sendSuccess ? '热搜原始数据已成功发送到飞书' : '热搜数据获取成功，但发送到飞书失败',
+            summary: {
+                total: crawler.results.length,
+                success: crawler.results.filter(r => r.success).length,
+                failed: crawler.errors.length,
+                duration: Date.now() - crawler.startTime
+            }
+        };
+        
+        res.status(sendSuccess ? 200 : 500).json(response);
+    } catch (error) {
+        console.error(chalk.red('❌ 发送原始热搜失败:'), error.message);
         res.status(500).json({
             success: false,
             error: error.message,
@@ -111,7 +145,8 @@ app.get('/', (req, res) => {
         endpoints: {
             'GET /health': '健康检查',
             'GET /api/hotsearch': '获取热搜数据（不发送）',
-            'GET /api/hotsearch/send': '获取热搜数据并发送到飞书',
+            'GET /api/hotsearch/send': '获取热搜数据并发送到飞书（使用 AI，如果启用）',
+            'GET /api/hotsearch/send/raw': '获取热搜数据并发送原始信息到飞书（不使用 AI）',
             'GET /api/run': '运行完整流程（获取并发送）'
         },
         timestamp: new Date().toISOString()

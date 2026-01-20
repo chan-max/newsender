@@ -307,7 +307,7 @@ class HotSearchCrawler {
         return message;
     }
 
-    // 发送到飞书
+    // 发送到飞书（使用 AI 整理，如果启用）
     async sendToFeishu() {
         console.log(chalk.blue('📤 开始发送飞书消息...'));
         let message = this.formatMessage();
@@ -317,6 +317,14 @@ class HotSearchCrawler {
             message = await organizeWithAI(message);
         }
         
+        const success = await sendToFeishu(message);
+        return success;
+    }
+
+    // 发送原始消息到飞书（不使用 AI）
+    async sendToFeishuRaw() {
+        console.log(chalk.blue('📤 开始发送原始飞书消息（不使用 AI）...'));
+        const message = this.formatMessage();
         const success = await sendToFeishu(message);
         return success;
     }
