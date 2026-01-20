@@ -1,0 +1,26 @@
+name: Daily Hotsearch
+
+on:
+  schedule:
+    # 每天 UTC 9:00 执行（北京时间 17:00）
+    - cron: '0 9 * * *'
+  # 支持手动触发
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Hotsearch to Feishu
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "⚠️ API_URL secret not set. Please set it in repository settings."
+            exit 1
+          fi
+          echo "🚀 Triggering hotsearch API: $API_URL/api/hotsearch/send"
+          curl "$API_URL/api/hotsearch/send" \
+            -w "\nHTTP Status: %{http_code}\n" \
+            -f || exit 1
+          echo "✅ Hotsearch sent successfully!"
