@@ -219,7 +219,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v20
+      # 使用 actions/setup-node@v3，指定 node-version 为 18
+      # 这样就无需依赖任何 API_URL secret，脚本直接在仓库中运行
+      - uses: actions/setup-node@v3
         with:
           node-version: '18'
       - run: npm ci
