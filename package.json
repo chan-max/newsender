@@ -1,6 +1,6 @@
 {
   "name": "newsender",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "热搜获取并发送到飞书",
   "main": "server.js",
   "scripts": {
